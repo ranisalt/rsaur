@@ -1,0 +1,67 @@
+name: build repository
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
+
+    env:
+      CCACHE_DIR: /tmp/ccache
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install base-devel
+      run: pacman -Syuq base-devel ccache fd git namcap --needed --noconfirm
+    
+    - name: setup makepkg
+      run: |
+        echo "::set-env name=PKGDEST::$PWD/pkgs"
+        useradd -M builduser && chown -R builduser .
+        echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
+        sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
+        cat makepkg.conf >> /etc/makepkg.conf
+        echo "MAKEFLAGS='-j$(nproc)'" >> /etc/makepkg.conf
+        envsubst < pacman.conf >> /etc/pacman.conf
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ccache-${{ github.sha }}
+        restore-keys: |
+          ccache-
+
+    - run: sudo -Eu builduser ccache -z
+
+    - name: build packages
+      run: |
+        pacman -Sy
+
+        PKGROOT="$PWD"
+        for pkg in mangohud; do
+          cd "$PKGROOT/$pkg"
+
+          echo
+          echo "==> Building $pkg"
+          yes | sudo -Eu builduser makepkg -sc --noconfirm
+        done
+
+        echo
+        echo "adding files to repo"
+        repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
+    
+    - run: sudo -Eu builduser ccache -s
+
+    - uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages
+        build_dir: pkgs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
