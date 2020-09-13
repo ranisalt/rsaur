@@ -10,22 +10,32 @@ jobs:
 
     env:
       CCACHE_DIR: /tmp/ccache
+      GPGKEY: 0EF1B500
+      GNUPGHOME: /tmp/gnupg
 
     steps:
     - uses: actions/checkout@v2
 
     - name: install base-devel
-      run: pacman -Syuq base-devel ccache fd git namcap --needed --noconfirm
-    
+      run: |
+        cat pacman.conf >> /etc/pacman.conf
+        pacman -Syuq --needed --noconfirm base-devel ccache fd git namcap
+
     - name: setup makepkg
       run: |
+        echo "::set-env name=MAKEFLAGS::-j$(nproc)"
         echo "::set-env name=PKGDEST::$PWD/pkgs"
+
         useradd -M builduser && chown -R builduser .
         echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
         sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
         cat makepkg.conf >> /etc/makepkg.conf
-        echo "MAKEFLAGS='-j$(nproc)'" >> /etc/makepkg.conf
-        envsubst < pacman.conf >> /etc/pacman.conf
+        sudo -Eu builduser env
+
+    - name: setup gpg
+      run: |
+        sudo -Eu builduser gpg --import <<< "${{ secrets.GPG_PUBLIC_KEY }}"
+        sudo -Eu builduser gpg --import <<< "${{ secrets.GPG_PRIVATE_KEY }}"
 
     - uses: actions/cache@v1
       with:
@@ -37,23 +47,23 @@ jobs:
     - run: sudo -Eu builduser ccache -z
 
     - name: build packages
+      env:
+        BUILDDIR: /tmp/makepkg
+        PACKAGER: ${{ secrets.PACKAGER }}
       run: |
-        pacman -Sy
-
-        PKGROOT="$PWD"
-        for pkg in $(fd -t d); do
-          cd "$PKGROOT/$pkg"
-
-          echo
-          echo "==> Building $pkg"
-          yes | sudo -Eu builduser makepkg -src --noconfirm
+        for pkg in $(fd -a -t directory); do
+          PKGNAME="$(basename "$pkg")"
+          cd "$PKGNAME"
+          echo "==> Building $PKGNAME"
+          echo "-> GPG key:"
+          sudo -Eu builduser gpg --list-secret-key "$GPGKEY"
+          yes | sudo -Eu builduser makepkg -crs --sign --noconfirm
         done
 
-        echo
-        echo "adding files to repo"
-        repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
+    - name: create repo db
+      run: repo-add --sign ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
     
-    - run: sudo -Eu builduser ccache -s
+    - run: sudo -Eu builduser ccache --show-stats
 
     - uses: crazy-max/ghaction-github-pages@v2
       if: ${{ github.ref == 'refs/heads/master' }}
