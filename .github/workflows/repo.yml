@@ -45,12 +45,12 @@ jobs:
         pacman -Sy
 
         PKGROOT="$PWD"
-        for pkg in mangohud; do
+        for pkg in gdm-nox mangohud; do
           cd "$PKGROOT/$pkg"
 
           echo
           echo "==> Building $pkg"
-          yes | sudo -Eu builduser makepkg -sc --noconfirm
+          yes | sudo -Eu builduser makepkg -src --noconfirm
         done
 
         echo
