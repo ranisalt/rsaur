@@ -10,8 +10,7 @@ url="https://github.com/FeralInteractive/gamemode"
 license=('BSD 3-Clause License (Revised)')
 arch=('x86_64')
 depends=('polkit')
-makedepends=('meson')
-optdepends=('systemd')
+makedepends=('meson' 'lib32-glibc' 'lib32-dbus')
 source=("$pkgbase-$pkgver.tar.gz::$url/releases/download/$pkgver/$pkgbase-$pkgver.tar.xz")
 sha256sums=('4fec5a0900e8f559b37cf1711ca7dcea7e1cebfe1237ce314001f65c1e346a5d')
 
@@ -35,6 +34,7 @@ build() {
 
 package_gamemode() {
   pkgdesc='A daemon/lib combo that allows games to request a set of optimisations be temporarily applied to the host OS'
+  optdepends=('systemd: service unit')
   install='gamemode.install'
 
   DESTDIR="$pkgdir" ninja -C build64 install
@@ -43,6 +43,7 @@ package_gamemode() {
 
 package_lib32-gamemode() {
   pkgdesc='A daemon/lib combo that allows games to request a set of optimisations be temporarily applied to the host OS (32-bit)'
+  depends=('lib32-glibc' 'lib32-dbus')
 
   DESTDIR="$pkgdir" ninja -C build32 install
   rm -rfv "$pkgdir/usr/include"
