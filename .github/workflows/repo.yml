@@ -45,7 +45,7 @@ jobs:
         pacman -Sy
 
         PKGROOT="$PWD"
-        for pkg in chili-sddm-theme gdm-nox mangohud; do
+        for pkg in $(fd -t d); do
           cd "$PKGROOT/$pkg"
 
           echo
