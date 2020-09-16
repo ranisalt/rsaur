@@ -10,8 +10,6 @@ jobs:
 
     env:
       CCACHE_DIR: /tmp/ccache
-      GPGKEY: 0EF1B500
-      GNUPGHOME: /tmp/gnupg
 
     steps:
     - uses: actions/checkout@v2
@@ -30,12 +28,6 @@ jobs:
         echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
         sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
         cat makepkg.conf >> /etc/makepkg.conf
-        sudo -Eu builduser env
-
-    - name: setup gpg
-      run: |
-        sudo -Eu builduser gpg --import <<< "${{ secrets.GPG_PUBLIC_KEY }}"
-        sudo -Eu builduser gpg --import <<< "${{ secrets.GPG_PRIVATE_KEY }}"
 
     - uses: actions/cache@v1
       with:
@@ -52,16 +44,13 @@ jobs:
         PACKAGER: ${{ secrets.PACKAGER }}
       run: |
         for pkg in $(fd -a -t directory); do
-          PKGNAME="$(basename "$pkg")"
-          cd "$PKGNAME"
-          echo "==> Building $PKGNAME"
-          echo "-> GPG key:"
-          sudo -Eu builduser gpg --list-secret-key "$GPGKEY"
-          yes | sudo -Eu builduser makepkg -crs --sign --noconfirm
+          cd "$pkg"
+          echo "==> Building $(basename "$pkg")"
+          yes | sudo -Eu builduser makepkg -crs --noconfirm
         done
 
     - name: create repo db
-      run: repo-add --sign ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
+      run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
     
     - run: sudo -Eu builduser ccache --show-stats
 
