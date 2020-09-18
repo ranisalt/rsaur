@@ -1,0 +1,24 @@
+diff --git a/meson.build b/meson.build
+index 5c2be78..59398ce 100644
+--- a/meson.build
++++ b/meson.build
+@@ -44,9 +44,7 @@ math           = cc.find_library('m')
+ thread_dep = dependency('threads')
+ sdl_dep = dependency('SDL2')
+ 
+-wlroots_proj = subproject('wlroots', default_options:
+-  ['default_library=static', 'examples=false'])
+-wlroots_static_dep = wlroots_proj.get_variable('wlroots')
++wlroots_dep = dependency('wlroots')
+ 
+ shadercompiler = find_program('glslangValidator')
+ 
+@@ -76,7 +74,7 @@ executable(
+     dependencies : [
+         dep_x11, dep_xdamage, dep_xcomposite, dep_xrender, dep_xext,
+         dep_xxf86vm, pixman_dep, drm_dep, wayland_server, wayland_protos,
+-        libinput, xkbcommon, math, thread_dep, sdl_dep, wlroots_static_dep,
++        libinput, xkbcommon, math, thread_dep, sdl_dep, wlroots_dep,
+         vulkan_dep, libftoff_dep, dep_xtst
+     ],
+     install: true,

@@ -1,0 +1,39 @@
+_liftoff_commit=95da3ee649fe42bb147789d5092e95c8f61fab77
+
+pkgname=gamescope
+pkgver=3.6.9
+pkgrel=1
+pkgdesc='The micro-compositor formerly known as steamcompmgr'
+arch=('x86_64')
+url='https://github.com/Plagman/gamescope'
+license=('BSD' 'custom:BSD 2-Clause "Simplified" License')
+depends=('wayland' 'opengl-driver' 'xorg-server-xwayland' 'libdrm' 'libinput'
+         'libxkbcommon' 'libxcomposite' 'libcap' 'libxcb' 'libpng' 'glslang'
+         'libxrender' 'libxtst' 'vulkan-icd-loader' 'sdl2' 'wlroots')
+makedepends=('git' 'meson' 'ninja' 'cmake' 'pixman' 'pkgconf' 'vulkan-headers'
+             'wayland-protocols>=1.17')
+source=("${url}/archive/${pkgver}.tar.gz"
+        "https://github.com/emersion/libliftoff/archive/$_liftoff_commit.tar.gz"
+        'shared-wlroots.patch')
+sha256sums=('c8cc5d345d26ff9f5b162edd6b0d64212c6f65413a150f2a7bc37002b1319f09'
+            'eeccfae73a4684cd0856eff451be97f4815f59f2eb32de10bfeca3b6f58c2262'
+            '121db785e86597202ae73d1bd96efbb0e209c25a99f804f0a78d09946d78ab18')
+provides=('steamcompmgr' 'libliftoff=0.0.0')
+conflicts=('gamescope-git' 'libliftoff')
+replaces=('steamcompmgr')
+
+prepare() {
+  cp -r "libliftoff-$_liftoff_commit/"* "$pkgname-$pkgver/subprojects/libliftoff"
+  rm -rf "$pkgname-$pkgver/subprojects/wlroots"
+  patch -Np1 -d "$pkgname-$pkgver" -i ../shared-wlroots.patch
+}
+
+build() {
+  arch-meson "$pkgname-$pkgver" build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname-$pkgver/LICENSE"
+}
