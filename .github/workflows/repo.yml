@@ -21,8 +21,8 @@ jobs:
 
     - name: setup makepkg
       run: |
-        echo "::set-env name=MAKEFLAGS::-j$(nproc)"
-        echo "::set-env name=PKGDEST::$PWD/pkgs"
+        echo "MAKEFLAGS=-j$(nproc)" >> $GITHUB_ENV
+        echo "PKGDEST=$PWD/pkgs" >> $GITHUB_ENV
 
         useradd -M builduser && chown -R builduser .
         echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
