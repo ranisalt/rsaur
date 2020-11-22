@@ -1,7 +1,7 @@
-_liftoff_commit=95da3ee649fe42bb147789d5092e95c8f61fab77
+_liftoff_commit=24abeb923f52176808461e664776b56d52960d3e
 
 pkgname=gamescope
-pkgver=3.6.9
+pkgver=3.7.1
 pkgrel=1
 pkgdesc='The micro-compositor formerly known as steamcompmgr'
 arch=('x86_64')
@@ -13,19 +13,16 @@ depends=('wayland' 'opengl-driver' 'xorg-server-xwayland' 'libdrm' 'libinput'
 makedepends=('git' 'meson' 'ninja' 'cmake' 'pixman' 'pkgconf' 'vulkan-headers'
              'wayland-protocols>=1.17')
 source=("${url}/archive/${pkgver}.tar.gz"
-        "https://github.com/emersion/libliftoff/archive/$_liftoff_commit.tar.gz"
-        'shared-wlroots.patch')
-sha256sums=('c8cc5d345d26ff9f5b162edd6b0d64212c6f65413a150f2a7bc37002b1319f09'
-            'eeccfae73a4684cd0856eff451be97f4815f59f2eb32de10bfeca3b6f58c2262'
-            '121db785e86597202ae73d1bd96efbb0e209c25a99f804f0a78d09946d78ab18')
+        "https://github.com/emersion/libliftoff/archive/$_liftoff_commit.tar.gz")
+sha256sums=('044f7969b796e678415ca7762fb21c04ecb331660b442b4fdcc389410ef36c6f'
+            'eccaafc0a007e61189e6cc5c0f2b6455aadc80a0dd81a79b73be4ba8f5149ab8')
 provides=('steamcompmgr' 'libliftoff=0.0.0')
 conflicts=('gamescope-git' 'libliftoff')
 replaces=('steamcompmgr')
 
 prepare() {
   cp -r "libliftoff-$_liftoff_commit/"* "$pkgname-$pkgver/subprojects/libliftoff"
-  rm -rf "$pkgname-$pkgver/subprojects/wlroots"
-  patch -Np1 -d "$pkgname-$pkgver" -i ../shared-wlroots.patch
+  sed -i -e "/subdir('test')/d" "$pkgname-$pkgver/subprojects/libliftoff/meson.build"
 }
 
 build() {
