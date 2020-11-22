@@ -1,0 +1,31 @@
+# Maintainer: robus <RobusGrobus95@gmail.com>
+# Contributor: Ranier Althoff <ranisalt+aur at gmail.com>
+
+pkgname=nvidia-xrun-git
+_pkgname="${pkgname%-git}"
+pkgver=0.3.83.g270b6c0
+pkgrel=1
+pkgdesc="Script to run dedicated X server with discrete nvidia graphics (git version)"
+arch=('x86_64')
+url='https://github.com/Witko/nvidia-xrun'
+license=('GPL')
+depends=('xorg-server' 'xorg-xinit' 'xorg-xrandr' 'NVIDIA-MODULE' 'mesa')
+provides=("$_pkgname=$pkgver" "$pkgname=$pkgver")
+conflicts=("$_pkgname")
+source=("git+https://github.com/Witko/$_pkgname.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  git describe --tags | sed "s/-/./g"
+}
+
+package() {
+  cd "$_pkgname"
+  install -Dm 644 -t "$pkgdir/etc/X11" nvidia-xorg.conf
+  install -Dm 644 -t "$pkgdir/etc/X11/xinit" nvidia-xinitrc
+  install -Dm 644 -t "$pkgdir/etc/default" nvidia-xrun
+  install -Dm 644 -t "$pkgdir/usr/lib/systemd/system" nvidia-xrun-pm.service
+  install -Dm 755 -t "$pkgdir/usr/bin" nvidia-xrun
+  install -dm 755 "$pkgdir/etc/X11/nvidia-xorg.conf.d" "$pkgdir/etc/X11/xinit/nvidia-xinitrc.d"
+}
