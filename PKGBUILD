@@ -2,16 +2,16 @@
 
 pkgbase=mangohud
 pkgname=('mangohud' 'lib32-mangohud' 'mangohud-common')
-pkgver=0.5.1
-pkgrel=3
+pkgver=0.6.1
+pkgrel=2
 url='https://github.com/flightlessmango/MangoHud'
 license=('MIT')
 arch=('x86_64')
 makedepends=('meson' 'python-mako' 'glslang' 'libglvnd' 'lib32-libglvnd'
              'vulkan-headers' 'vulkan-icd-loader' 'lib32-vulkan-icd-loader'
-             'libxnvctrl')
-source=("$pkgbase-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
-sha256sums=('3e91d4fc7369d46763894c13f3315133871dd02705072981770c3cf58e8081c6')
+             'libxnvctrl' 'dbus')
+source=("$pkgbase-$pkgver.tar.gz::https://github.com/flightlessmango/MangoHud/archive/v$pkgver.tar.gz")
+sha256sums=('a1cb0bef85fd46a6e5e7426b86e0d16714e5ec68f96c724f6f53a357f516f78b')
 
 _srcdir="MangoHud-$pkgver"
 
@@ -29,7 +29,7 @@ build() {
 
 package_mangohud() {
     pkgdesc='A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more'
-    depends=('gcc-libs' 'mangohud-common')
+    depends=('gcc-libs' 'dbus' 'mangohud-common')
     optdepends=('bash: mangohud helper script'
                 'libxnvctrl: support for older NVIDIA GPUs')
 
@@ -41,7 +41,7 @@ package_mangohud() {
 
 package_lib32-mangohud() {
     pkgdesc='A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more (32-bit)'
-    depends=('lib32-gcc-libs' 'mangohud' 'mangohud-common')
+    depends=('lib32-gcc-libs' 'lib32-dbus' 'mangohud-common')
     optdepends=('lib32-libxnvctrl: support for older NVIDIA GPUs')
 
     DESTDIR="$pkgdir" ninja -C build32 install
@@ -60,3 +60,4 @@ package_mangohud-common() {
 
     install -Dm644 "$_srcdir/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
+
