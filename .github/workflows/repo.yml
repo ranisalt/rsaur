@@ -53,11 +53,12 @@ jobs:
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
     
     - run: sudo -Eu builduser ccache --show-stats
+    - run: cp -LR ${{ env.PKGDEST }} output
 
     - uses: crazy-max/ghaction-github-pages@v2
       if: ${{ github.ref == 'refs/heads/master' }}
       with:
         target_branch: gh-pages
-        build_dir: pkgs
+        build_dir: output
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

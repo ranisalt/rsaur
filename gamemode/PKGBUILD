@@ -11,10 +11,8 @@ license=('BSD 3-Clause License (Revised)')
 arch=('x86_64')
 depends=('polkit')
 makedepends=('meson' 'lib32-glibc' 'lib32-dbus')
-source=("$url/releases/download/$pkgver/$pkgbase-$pkgver.tar.xz"{,.asc})
-validpgpkeys=('08F9C1C788CC7515')
-sha256sums=('ede17eb042c1c87f7b35bfe96a00560afaea086f685d25bb3964d794b0af9c80'
-            'SKIP')
+source=("$url/releases/download/$pkgver/$pkgbase-$pkgver.tar.xz")
+sha256sums=('ede17eb042c1c87f7b35bfe96a00560afaea086f685d25bb3964d794b0af9c80')
 
 build() {
   arch-meson "$pkgname-$pkgver" build64 \
