@@ -6,7 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: archlinux
+      image: archlinux:base-devel
+
 
     env:
       CCACHE_DIR: /tmp/ccache
@@ -14,10 +15,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - run: pacman -Tv
+
     - name: install base-devel
       run: |
         cat pacman.conf >> /etc/pacman.conf
-        pacman -Syuq --needed --noconfirm base-devel ccache fd git namcap
+        pacman -Syuq --needed --noconfirm ccache fd git namcap
 
     - name: setup makepkg
       run: |
