@@ -1,0 +1,27 @@
+pkgbase = libblockdev-light
+	pkgdesc = A library for manipulating block devices
+	pkgver = 2.25
+	pkgrel = 2
+	url = https://github.com/rhinstaller/libblockdev
+	arch = x86_64
+	license = LGPL
+	makedepends = autoconf-archive
+	makedepends = gobject-introspection
+	makedepends = systemd
+	makedepends = python
+	depends = dosfstools
+	depends = gptfdisk
+	depends = libbytesize
+	depends = ndctl
+	depends = parted
+	depends = volume_key
+	depends = xfsprogs
+	depends = kmod
+	depends = libyaml
+	provides = libblockdev=2.25
+	conflicts = libblockdev
+	source = libblockdev-light-2.25.tar.gz::https://github.com/rhinstaller/libblockdev/archive/2.25-1.tar.gz
+	sha512sums = d78a5a506b2d1c12dc218987ccf422e25ea06b2f71cc4ea39b86d1e23842b29b49832f1dfe6da318a14de94f7e66c0070f3e34443c4feb89e4e8f04c1971aa9e
+
+pkgname = libblockdev-light
+

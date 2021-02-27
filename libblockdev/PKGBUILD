@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=libblockdev-light
+pkgver=2.25
+pkgrel=2
+pkgdesc="A library for manipulating block devices"
+arch=('x86_64')
+url="https://github.com/rhinstaller/libblockdev"
+license=('LGPL')
+depends=('dosfstools' 'gptfdisk' 'libbytesize' 'ndctl'
+         'parted' 'volume_key' 'xfsprogs' 'kmod' 'libyaml')
+makedepends=('autoconf-archive' 'gobject-introspection' 'systemd' 'python')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/rhinstaller/libblockdev/archive/$pkgver-1.tar.gz")
+sha512sums=('d78a5a506b2d1c12dc218987ccf422e25ea06b2f71cc4ea39b86d1e23842b29b49832f1dfe6da318a14de94f7e66c0070f3e34443c4feb89e4e8f04c1971aa9e')
+_pkgname="${pkgname%-light}"
+provides=("$_pkgname=$pkgver")
+conflicts=("$_pkgname")
+
+build() {
+  options=(
+    --without-btrfs
+    --without-dm
+    --without-dmraid
+    --without-mdraid
+    --without-lvm
+    --without-lvm_dbus
+  )
+
+  cd "$srcdir/$_pkgname-$pkgver-1"
+  ./autogen.sh
+  ./configure --prefix=/usr --sysconfdir=/etc ${options[@]}
+  make
+}
+
+check() {
+  cd "$srcdir/$_pkgname-$pkgver-1"
+  make check
+}
+
+package() {
+  cd "$srcdir/$_pkgname-$pkgver-1"
+  make DESTDIR="$pkgdir" install
+}
