@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: archlinux:base-devel
+      image: archlinux:base-20210131.0.14634
 
 
     env:
@@ -20,7 +20,7 @@ jobs:
     - name: install base-devel
       run: |
         cat pacman.conf >> /etc/pacman.conf
-        pacman -Syuq --needed --noconfirm ccache fd git namcap
+        pacman -Syuq --needed --noconfirm base-devel ccache fd git namcap
 
     - name: setup makepkg
       run: |
@@ -40,6 +40,8 @@ jobs:
           ccache-
 
     - run: sudo -Eu builduser ccache -z
+
+    - run: pacman -Tv
 
     - name: build packages
       env:
