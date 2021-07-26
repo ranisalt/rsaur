@@ -1,36 +1,46 @@
-_liftoff_commit=24abeb923f52176808461e664776b56d52960d3e
+_liftoff_commit=b08bbaa5e6331ed273c4bbd867143bf776c18207
+_wlroots_commit=69c71dbc8afecc5da5c800cdc1475185064b4ac4
 
 pkgname=gamescope
-pkgver=3.7.1
+pkgver=3.8.4
 pkgrel=1
 pkgdesc='The micro-compositor formerly known as steamcompmgr'
 arch=('x86_64')
 url='https://github.com/Plagman/gamescope'
 license=('BSD' 'custom:BSD 2-Clause "Simplified" License')
-depends=('wayland' 'opengl-driver' 'xorg-server-xwayland' 'libdrm' 'libinput'
-         'libxkbcommon' 'libxcomposite' 'libcap' 'libxcb' 'libpng' 'glslang'
-         'libxrender' 'libxtst' 'vulkan-icd-loader' 'sdl2' 'wlroots')
+depends=('xorg-server-xwayland' 'libinput' 'libxkbcommon' 'libxcomposite'
+         'libxtst' 'libxres' 'sdl2' 'xcb-util-renderutil')
 makedepends=('git' 'meson' 'ninja' 'cmake' 'pixman' 'pkgconf' 'vulkan-headers'
              'wayland-protocols>=1.17')
-source=("${url}/archive/${pkgver}.tar.gz"
-        "https://github.com/emersion/libliftoff/archive/$_liftoff_commit.tar.gz")
-sha256sums=('044f7969b796e678415ca7762fb21c04ecb331660b442b4fdcc389410ef36c6f'
-            'eccaafc0a007e61189e6cc5c0f2b6455aadc80a0dd81a79b73be4ba8f5149ab8')
+source=("$pkgname-$pkgver.tar.gz::${url}/archive/${pkgver}.tar.gz"
+        "libliftoff-$_liftoff_commit.tar.gz::https://github.com/emersion/libliftoff/archive/$_liftoff_commit.tar.gz"
+        "wlroots-$_wlroots_commit.tar.gz::https://github.com/swaywm/wlroots/archive/$_wlroots_commit.tar.gz")
+sha256sums=('761d0baa20b683cb3f3bb0126229a05b2912e016970a24c3beba12468d7df6ae'
+            '46415b8470913e3fe746867f396c45e59628cfd5918c0467aef27c86b9f5ecd6'
+            'd2feb19cd2dcf1ea1ef3559a22ec49d916e6fc266bd80a5e32ab1564a5c93589')
 provides=('steamcompmgr' 'libliftoff=0.0.0')
 conflicts=('gamescope-git' 'libliftoff')
 replaces=('steamcompmgr')
 
 prepare() {
-  cp -r "libliftoff-$_liftoff_commit/"* "$pkgname-$pkgver/subprojects/libliftoff"
+  cp -r "libliftoff-$_liftoff_commit/"* "$pkgname-$pkgver/subprojects/libliftoff/"
   sed -i -e "/subdir('test')/d" "$pkgname-$pkgver/subprojects/libliftoff/meson.build"
+
+  cp -r "wlroots-$_wlroots_commit/"* "$pkgname-$pkgver/subprojects/wlroots/"
 }
 
 build() {
-  arch-meson "$pkgname-$pkgver" build
+  CFLAGS="$CFLAGS -Wno-error"
+  arch-meson --auto-features auto build "$pkgname-$pkgver"
   ninja -C build
 }
 
 package() {
   DESTDIR="$pkgdir" ninja -C build install
+
+  rm -rfv "$pkgdir/usr/include"
+  rm -rfv "$pkgdir/usr/lib/libwlroots"*
+  rm -fv  "$pkgdir/usr/lib/pkgconfig/wlroots.pc"
+
   install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname-$pkgver/LICENSE"
 }
