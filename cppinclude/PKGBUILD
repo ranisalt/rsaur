@@ -8,6 +8,7 @@ url='https://github.com/cppinclude/cppinclude'
 license=('MIT')
 arch=('x86_64')
 depends=('gcc-libs')
+makedepends=('cmake')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('31c36a347b43ee667c6f17121c2d0fb7cf4d2672130f25273a48835b21f6ae40')
 
