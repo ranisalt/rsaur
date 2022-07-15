@@ -1,7 +1,7 @@
 pkgbase = libblockdev-light
 	pkgdesc = A library for manipulating block devices
-	pkgver = 2.25
-	pkgrel = 2
+	pkgver = 2.27
+	pkgrel = 1
 	url = https://github.com/rhinstaller/libblockdev
 	arch = x86_64
 	license = LGPL
@@ -18,10 +18,9 @@ pkgbase = libblockdev-light
 	depends = xfsprogs
 	depends = kmod
 	depends = libyaml
-	provides = libblockdev=2.25
+	provides = libblockdev=2.27
 	conflicts = libblockdev
-	source = libblockdev-light-2.25.tar.gz::https://github.com/rhinstaller/libblockdev/archive/2.25-1.tar.gz
-	sha512sums = d78a5a506b2d1c12dc218987ccf422e25ea06b2f71cc4ea39b86d1e23842b29b49832f1dfe6da318a14de94f7e66c0070f3e34443c4feb89e4e8f04c1971aa9e
+	source = libblockdev-light-2.27.tar.gz::https://github.com/rhinstaller/libblockdev/archive/2.27-1.tar.gz
+	sha512sums = d6c13d1e3d8aa2b1c721c13a387377c837dec0e7efc1b9a950204d8c879d420fbd57b2f8ab324a4685a8d0dae785a603ec3413d3e9e2987003c1258180bcf6e7
 
 pkgname = libblockdev-light
-
