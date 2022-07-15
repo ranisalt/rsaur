@@ -9,7 +9,7 @@
 
 _pkgname=gnome-online-accounts
 pkgname="$_pkgname-nonprism"
-pkgver=3.38.0
+pkgver=3.44.0
 pkgrel=1
 pkgdesc="Single sign-on framework for GNOME"
 url="https://wiki.gnome.org/Projects/GnomeOnlineAccounts"
@@ -20,7 +20,7 @@ makedepends=(gobject-introspection gtk-doc vala git meson)
 optdepends=('gvfs-goa: Virtual file systems, e.g. OwnCloud')
 provides=("$_pkgname=$pkgver" libgoa-1.0.so libgoa-backend-1.0.so)
 conflicts=("$_pkgname")
-_commit=45c1d2910d4ca3c5a24c4d2b6ede5a3c12cbf26a  # tags/3.38.0^0
+_commit=568139a2ce9d3791bd90b2b431898f712821c817  # tags/3.44.0^0
 source=("git+https://gitlab.gnome.org/GNOME/gnome-online-accounts.git#commit=$_commit")
 sha256sums=('SKIP')
 
@@ -31,17 +31,13 @@ pkgver() {
 
 build() {
   arch-meson $_pkgname build \
-    -D lastfm=false \
-    -D todoist=false \
     -D exchange=false \
     -D facebook=false \
     -D flickr=false \
-    -D google=false \
-    -D pocket=false \
-    -D windows=false-live \
-    -D twitter=false \
-    -D yahoo=false \
     -D foursquare=false \
+    -D google=false \
+    -D lastfm=false \
+    -D windows_live=false \
     -D media_server=true \
     -D gtk_doc=true \
     -D man=true
