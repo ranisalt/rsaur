@@ -14,7 +14,9 @@ jobs:
 
 
     env:
+      BUILDDIR: /tmp/makepkg
       CCACHE_DIR: /tmp/ccache
+      PACKAGER: ${{ secrets.PACKAGER }}
 
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +24,7 @@ jobs:
     - name: install dependencies
       run: |
         cat pacman.conf >> /etc/pacman.conf
-        pacman -Syuq --needed --noconfirm ccache fd git namcap
+        pacman -Syuq --needed --noconfirm asp ccache fd git namcap
 
     - name: setup makepkg
       run: |
@@ -43,15 +45,13 @@ jobs:
 
     - run: sudo -Eu builduser ccache -z
 
+    - name: prepare nvidia-zen
+      run: sh nvidia-zen.sh
+
     - name: build packages
-      env:
-        BUILDDIR: /tmp/makepkg
-        PACKAGER: ${{ secrets.PACKAGER }}
       run: |
         for pkg in $(fd -a -t directory); do
-          cd "$pkg"
-          echo "==> Building $(basename "$pkg")"
-          yes | sudo -Eu builduser makepkg -crs --noconfirm
+          sh build.sh "$pkg"
         done
 
     - name: create repo db
