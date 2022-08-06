@@ -11,13 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: archlinux:base-devel
-
+      options: --privileged
 
     env:
-      BUILDDIR: /tmp/makepkg
-      CCACHE_DIR: /tmp/ccache
-      GOCACHE: /tmp/gocache
-      GOPATH: /tmp/gopath
       PACKAGER: ${{ secrets.PACKAGER }}
 
     steps:
@@ -26,7 +22,7 @@ jobs:
     - name: install dependencies
       run: |
         cat pacman.conf >> /etc/pacman.conf
-        pacman -Syuq --needed --noconfirm asp ccache git namcap
+        pacman -Syuq --needed --noconfirm asp devtools
 
     - name: setup makepkg
       run: |
@@ -35,18 +31,7 @@ jobs:
 
         useradd -M builduser
         echo 'builduser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builduser
-        sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
         cat makepkg.conf >> /etc/makepkg.conf
-
-    - uses: actions/cache@v1
-      if: ${{ !env.ACT }}
-      with:
-        path: ${{ env.CCACHE_DIR }}
-        key: ccache-${{ github.sha }}
-        restore-keys: |
-          ccache-
-
-    - run: sudo -EHu builduser ccache -z
 
     - name: generate dynamic packages
       run: |
@@ -55,14 +40,11 @@ jobs:
         done < aur_packages.txt
 
     - name: build packages
-      run: |
-        chown -R builduser .
-        find -name PKGBUILD -execdir sh -c 'yes | sudo -EHu builduser makepkg -crs --noconfirm' \;
+      run: find -name PKGBUILD -execdir sudo -u builduser extra-x86_64-build \;
 
     - name: create repo db
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
     
-    - run: sudo -EHu builduser ccache --show-stats
     - run: cp -LR ${{ env.PKGDEST }} output
 
     - uses: crazy-max/ghaction-github-pages@v2
