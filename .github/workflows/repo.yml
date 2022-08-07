@@ -31,7 +31,7 @@ jobs:
         echo "MAKEFLAGS=-j$(nproc)" >> $GITHUB_ENV
         echo "PKGDEST=$PWD/pkgs" >> $GITHUB_ENV
 
-        useradd -M builduser && chown -R builduser .
+        useradd -M builduser
         echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
         sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
         cat makepkg.conf >> /etc/makepkg.conf
@@ -50,6 +50,7 @@ jobs:
 
     - name: build packages
       run: |
+        chown -R builduser .
         for pkg in $(fd -a -t directory); do
           sh build.sh "$pkg"
         done
