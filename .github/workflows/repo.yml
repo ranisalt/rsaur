@@ -24,7 +24,7 @@ jobs:
     - name: install dependencies
       run: |
         cat pacman.conf >> /etc/pacman.conf
-        pacman -Syuq --needed --noconfirm asp ccache fd git namcap
+        pacman -Syuq --needed --noconfirm asp ccache git namcap
 
     - name: setup makepkg
       run: |
@@ -32,7 +32,7 @@ jobs:
         echo "PKGDEST=$PWD/pkgs" >> $GITHUB_ENV
 
         useradd -M builduser
-        echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
+        echo 'builduser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builduser
         sed -i -e 's/!ccache/ccache/' /etc/makepkg.conf
         cat makepkg.conf >> /etc/makepkg.conf
 
@@ -51,9 +51,7 @@ jobs:
     - name: build packages
       run: |
         chown -R builduser .
-        for pkg in $(fd -a -t directory); do
-          sh build.sh "$pkg"
-        done
+        find -name PKGBUILD -execdir sh -c 'yes | sudo -Eu builduser makepkg -crs --noconfirm' \;
 
     - name: create repo db
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
