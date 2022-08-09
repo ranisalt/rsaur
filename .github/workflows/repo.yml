@@ -16,6 +16,8 @@ jobs:
     env:
       BUILDDIR: /tmp/makepkg
       CCACHE_DIR: /tmp/ccache
+      GOCACHE: /tmp/gocache
+      GOPATH: /tmp/gopath
       PACKAGER: ${{ secrets.PACKAGER }}
 
     steps:
@@ -37,13 +39,14 @@ jobs:
         cat makepkg.conf >> /etc/makepkg.conf
 
     - uses: actions/cache@v1
+      if: ${{ !env.ACT }}
       with:
         path: ${{ env.CCACHE_DIR }}
         key: ccache-${{ github.sha }}
         restore-keys: |
           ccache-
 
-    - run: sudo -Eu builduser ccache -z
+    - run: sudo -EHu builduser ccache -z
 
     - name: generate dynamic packages
       run: |
@@ -55,12 +58,12 @@ jobs:
     - name: build packages
       run: |
         chown -R builduser .
-        find -name PKGBUILD -execdir sh -c 'yes | sudo -Eu builduser makepkg -crs --noconfirm' \;
+        find -name PKGBUILD -execdir sh -c 'yes | sudo -EHu builduser makepkg -crs --noconfirm' \;
 
     - name: create repo db
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
     
-    - run: sudo -Eu builduser ccache --show-stats
+    - run: sudo -EHu builduser ccache --show-stats
     - run: cp -LR ${{ env.PKGDEST }} output
 
     - uses: crazy-max/ghaction-github-pages@v2
