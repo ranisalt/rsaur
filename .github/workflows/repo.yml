@@ -45,8 +45,12 @@ jobs:
 
     - run: sudo -Eu builduser ccache -z
 
-    - name: prepare nvidia-zen
-      run: sh nvidia-zen.sh
+    - name: generate dynamic packages
+      run: |
+        while read pkg; do
+          curl -sSL "https://aur.archlinux.org/cgit/aur.git/snapshot/$pkg.tar.gz" | tar zxvf -
+        done < aur_packages.txt
+        sh nvidia-zen.sh
 
     - name: build packages
       run: |
