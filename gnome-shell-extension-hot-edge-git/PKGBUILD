@@ -15,7 +15,8 @@ source=("$pkgname::git+$url.git")
 sha256sums=('SKIP')
 
 pkgver() {
-  jq -r '.version' < "$pkgname/metadata.json"
+  cd "$pkgname"
+  printf "%s.r%s.%s" "$(jq -r '.version' < metadata.json)" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 build() {
