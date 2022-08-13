@@ -53,7 +53,10 @@ jobs:
         while read pkg; do
           curl -sSL "https://aur.archlinux.org/cgit/aur.git/snapshot/$pkg.tar.gz" | tar zxvf -
         done < aur_packages.txt
-        sh nvidia-zen.sh
+
+        for script in scripts/*.sh; do
+          sh -x "$script"
+        done
 
     - name: build packages
       run: |
