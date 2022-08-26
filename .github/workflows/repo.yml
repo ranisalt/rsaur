@@ -54,10 +54,6 @@ jobs:
           curl -sSL "https://aur.archlinux.org/cgit/aur.git/snapshot/$pkg.tar.gz" | tar zxvf -
         done < aur_packages.txt
 
-        for script in scripts/*.sh; do
-          sh -x "$script"
-        done
-
     - name: build packages
       run: |
         chown -R builduser .
