@@ -1,0 +1,19 @@
+BASEDIR="$HOME/.var/app/org.mozilla.firefox"
+
+if [[ -d "$BASEDIR/.mozilla/firefox" ]]; then
+    index=0
+    PSNAME="firefox-bin"
+    while read -r profileItem; do
+        if [[ $(echo "$profileItem" | cut -c1) = "/" ]]; then
+            # path is not relative
+            DIRArr[$index]="$profileItem"
+        else
+            # we need to append the default path to give a
+            # fully qualified path
+            DIRArr[$index]="$BASEDIR/.mozilla/firefox/$profileItem"
+        fi
+        (( index=index+1 ))
+    done < <(grep '[Pp]'ath= "$BASEDIR/.mozilla/firefox/profiles.ini" | sed 's/[Pp]ath=//')
+fi
+
+check_suffix=1

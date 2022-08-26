@@ -1,0 +1,34 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: graysky <graysky AT archlinux DOT us>
+
+pkgname=profile-sync-daemon
+pkgver=6.45
+pkgrel=1
+pkgdesc="Symlinks and syncs browser profile dirs to RAM"
+arch=(any)
+url="https://github.com/graysky2/profile-sync-daemon"
+license=(MIT)
+depends=(bash findutils procps-ng rsync systemd)
+optdepends=('zsh-completions: for completion when using zsh')
+install=$pkgname.install
+source=("$pkgname-$pkgver.tar.gz::https://github.com/graysky2/$pkgname/archive/v$pkgver.tar.gz"
+	firefox-flatpak)
+sha512sums=('6408d506f48671ad1340ce4a60109a482565c7174f56db8a528884319594b901b3d2d7e99b30536992934065ad2fbaff7a9335cd1952a7a1aaf6c920fb9aa90e'
+            'e094d6051cea7f3b92a03150d5b6e45d55a01172e506a93a55e9515171d563ed41a77825b69dd429ec35375976c5005d9422bd9fd7bcdfc8d92690fb4d8e7094')
+b2sums=('0b891fe3ad05e22fc32087d451ad987379654419fcbe73aeeb9c536b5f5f834700ea4c0d8b5a5f4dbbfb010171fd40508d348f531eb56bb085717c4c36fd0517'
+        '08c049662675686ce76be1529e54d6f7e01fe28f6b145d93f42e326a8d196f626d540ded3554fd314d08f9c399a7b8871cbee188de022bdf61f0ce32136d6c99')
+
+build() {
+  cp firefox-flatpak "$pkgname-$pkgver/common/browsers/firefox-flatpak"
+  sed \
+    -e '/^VOLATILE=/ s|"$|/psd&|' \
+    -e '/^PID_FILE=/ s|\$VOLATILE|$XDG_RUNTIME_DIR|' \
+    -i "$pkgname-$pkgver/common/profile-sync-daemon.in"
+  make -C $pkgname-$pkgver
+}
+
+package() {
+  make DESTDIR="$pkgdir" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/MIT -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,22 @@
+pkgbase = profile-sync-daemon
+	pkgdesc = Symlinks and syncs browser profile dirs to RAM
+	pkgver = 6.45
+	pkgrel = 1
+	url = https://github.com/graysky2/profile-sync-daemon
+	install = profile-sync-daemon.install
+	arch = any
+	license = MIT
+	depends = bash
+	depends = findutils
+	depends = procps-ng
+	depends = rsync
+	depends = systemd
+	optdepends = zsh-completions: for completion when using zsh
+	source = profile-sync-daemon-6.45.tar.gz::https://github.com/graysky2/profile-sync-daemon/archive/v6.45.tar.gz
+	source = firefox-flatpak
+	sha512sums = 6408d506f48671ad1340ce4a60109a482565c7174f56db8a528884319594b901b3d2d7e99b30536992934065ad2fbaff7a9335cd1952a7a1aaf6c920fb9aa90e
+	sha512sums = e094d6051cea7f3b92a03150d5b6e45d55a01172e506a93a55e9515171d563ed41a77825b69dd429ec35375976c5005d9422bd9fd7bcdfc8d92690fb4d8e7094
+	b2sums = 0b891fe3ad05e22fc32087d451ad987379654419fcbe73aeeb9c536b5f5f834700ea4c0d8b5a5f4dbbfb010171fd40508d348f531eb56bb085717c4c36fd0517
+	b2sums = 08c049662675686ce76be1529e54d6f7e01fe28f6b145d93f42e326a8d196f626d540ded3554fd314d08f9c399a7b8871cbee188de022bdf61f0ce32136d6c99
+
+pkgname = profile-sync-daemon
