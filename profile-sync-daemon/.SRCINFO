@@ -2,6 +2,7 @@ pkgbase = profile-sync-daemon
 	pkgdesc = Symlinks and syncs browser profile dirs to RAM
 	pkgver = 6.45
 	pkgrel = 1
+	epoch = 1
 	url = https://github.com/graysky2/profile-sync-daemon
 	install = profile-sync-daemon.install
 	arch = any
