@@ -50,6 +50,8 @@ jobs:
 
     - name: generate dynamic packages
       run: |
+        find scripts -type f -exec sh '{}' \;
+
         while read pkg; do
           curl -sSL "https://aur.archlinux.org/cgit/aur.git/snapshot/$pkg.tar.gz" | tar zxvf -
         done < aur_packages.txt
@@ -61,7 +63,7 @@ jobs:
 
     - name: create repo db
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
-    
+
     - run: sudo -EHu builduser ccache --show-stats
     - run: cp -LR ${{ env.PKGDEST }} output
 
