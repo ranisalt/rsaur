@@ -40,11 +40,11 @@ jobs:
         done < aur_packages.txt
 
     - name: build packages
-      run: find -name PKGBUILD -execdir sudo -u builduser extra-x86_64-build \;
+      run: find -name PKGBUILD -execdir extra-x86_64-build \;
 
     - name: create repo db
       run: repo-add ${{ env.PKGDEST }}/rsa.db.tar.zst ${{ env.PKGDEST }}/*.pkg.tar.zst
-    
+
     - run: cp -LR ${{ env.PKGDEST }} output
 
     - uses: crazy-max/ghaction-github-pages@v2
