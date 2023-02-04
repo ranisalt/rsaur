@@ -1,6 +1,6 @@
 # Maintainer: Your Name <youremail@domain.com>
 pkgname=stduuid
-pkgver=1.2.2
+pkgver=1.2.3
 pkgrel=1
 pkgdesc="A C++17 cross-platform single-header library implementation for universally unique identifiers"
 arch=('any')
