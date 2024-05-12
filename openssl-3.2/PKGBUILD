@@ -18,7 +18,7 @@ source=("https://www.openssl.org/source/${_pkgname}-${pkgver}.tar.gz"{,.asc}
 sha256sums=('14c826f07c7e433706fb5c69fa9e25dab95684844b4c962a2cf1bf183eb4690e'
             'SKIP'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
-            '01797fadcd83875248b0602da5440ed4ccc9e3a049963c503332b7dc7a548507')
+            'b27f64a7fbb0e82dde00cee64424f32de0a29a886dc9df253eeb2475a59db838')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'
               '7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C'
               'A21FAB74B0088AA361152586B8EF1A6BA9DA2D5C'
